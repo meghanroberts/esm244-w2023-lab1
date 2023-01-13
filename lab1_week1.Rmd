@@ -14,3 +14,22 @@ library(sf)
 library(tmap)
 ```
 
+### Read in data
+```{r}
+sf_trees <- read_csv(here("data", "sf_trees", "sf_trees.csv")) 
+        #read_csv is improved read.csv (tidyverse)
+top_5_status <- sf_trees %>% 
+  group_by(legal_status) %>%  
+  summarize (tree_count=n()) %>% 
+  slice_max(tree_count, n=5) %>% #find the maximum of tree_count and slice out the top 5
+  arrange(-tree_count)
+
+ggplot(data=top_5_status, aes(x=fct_reorder(legal_status, tree_count), 
+                              #factor reorder the legal status by tree count
+                              y=tree_count))+
+  geom_col()+
+  labs(y="Tree Count", x="Legal Status") +
+  coord_flip() + #flip x and y axis
+  theme_minimal()
+```
+
